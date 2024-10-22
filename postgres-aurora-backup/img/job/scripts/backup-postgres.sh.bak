@@ -1,0 +1,24 @@
+#!/bin/bash
+
+cd /tmp
+date1=$(date +%Y-%m-%d-%H%M)
+mkdir pg-backup
+
+###pg_dumpall > pg-backup/postgres-db.tar
+file_name="$date1-$POSTGRES_NAMESPACE.tar.gz"
+psql -h aurora-cluster-us-east-2.cluster-cufzhgd2jvkt.us-east-2.rds.amazonaws.com  -U uanalyze -d uanalyze_orgcus -p 5432 -t -c "select datname from pg_database where datname ='uanalyze_ttvphase2'" > db.txt
+sed -i '/^[[:space:]]*$/d' db.txt
+cat db.txt | while read line
+do
+   echo $line
+   pg_dump -h aurora-cluster-us-east-2.cluster-cufzhgd2jvkt.us-east-2.rds.amazonaws.com -p 5432 -U uanalyze -d $line -Fd -f pg-backup/$line
+#   tar -zcvf pg-backup/$line.tar pg-backup/$line
+#   rm -f pg-backup/$line/*
+done
+
+
+#Compressing backup file for upload
+tar -zcvf $file_name pg-backup
+
+# Uploading to s3
+aws s3 cp $file_name "s3://$S3_BUCKET/$CLUSTER_NAME/$POSTGRES_NAMESPACE/`date +%Y/%m/%d`/"

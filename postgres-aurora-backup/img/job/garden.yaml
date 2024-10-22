@@ -1,0 +1,6 @@
+kind: Module
+type: container
+name: postgresql-aurora-backup-image
+image: postgresql-aurora-backup
+dockerfile: Dockerfile
+disabled: ${ environment.name == 'build' }

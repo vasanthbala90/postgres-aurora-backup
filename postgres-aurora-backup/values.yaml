@@ -1,0 +1,42 @@
+replicaCount: 1
+
+image:
+  id: registry.uniphore.com/uniphore-manual/pos-backup-test:12
+  pullPolicy: IfNotPresent
+
+datadog:
+  env: "Dev" # uassist helmrelease-value = '{{ .Values.datadog.env }}'
+  service: postgres-aurora-backup
+
+enabled: true # uassist helmrelease-value = '{{ .Values.postgres.backup.enabled }}'
+
+clusterName: "uniphore-dev-us-eks-platform"  # uassist helmrelease-value = '{{ .Values.dbBackup.clusterName }}'
+
+cronSchedule: "0 */6 * * *" # uassist helmrelease-value = '{{ .Values.dbBackup.cronSchedule }}'
+
+
+us: "0 7 * * *"
+uk: "0 2 * * *"
+de: "0 1 * * *"
+sg: "0 19 * * *"
+in: "30 21 * * *"
+au: "0 17 * * *"
+qatar: "0 0 * * *"
+me: "0 0 * * *"
+ae: "0 22 * * *"
+default: "0 2 * * *"
+
+postgres:
+  pvc:
+    size: 100Gi # helmrelease-value = '{{ .Values.postgres.pvc.size }}
+db:
+  user: "uanalyze"
+  host: "aurora-cluster-us-east-2.cluster-cufzhgd2jvkt.us-east-2.rds.amazonaws.com"
+  password: "Y7bFYGnoFmLUBjEH"
+  port: 5432
+
+imagePullSecrets:
+  - name: uniphore-secret
+
+dbBackup:
+  secretName: "uniphore/us/platform/uniphore-platform-dev-us-db-backup/s3-credentials" # helmrelease-value = '{{ .Values.dbBackup.secretName }}'

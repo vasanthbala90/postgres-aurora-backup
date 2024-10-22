@@ -1,0 +1,25 @@
+kind: Module
+type: helm
+name: postgres-aurora-backup
+disabled: false
+
+serviceResource:
+  kind: Deployment
+  name: postgres-aurora-backup
+
+dependencies:
+  - postgresql
+
+build:
+  dependencies:
+    - name: postgresql-aurora-backup-image
+
+values:
+  datadog:
+    env: ${var.datadog.env}
+  image:
+    id: ${modules.postgresql-aurora-backup-image.outputs.deployment-image-id}
+  enabled: false
+
+valueFiles:
+  - values.yaml
